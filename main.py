@@ -11,7 +11,8 @@ You are a helpful, respectful and honest assistant. Always answer as helpfully a
 If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
 
 Edit the following reading notes to ensure the structure reads well.
-I also need you to check for grammatical errors and spelling mistakes.
+Check for grammatical errors and spelling mistakes.
+Preserve markdown formatting.
 
 {article}
 
@@ -26,7 +27,8 @@ If a question does not make any sense, or is not factually coherent, explain why
 <|im_end|>
 <|im_start|>user
 Edit the following reading notes to ensure the structure reads well.
-I also need you to check for grammatical errors and spelling mistakes.
+Check for grammatical errors and spelling mistakes.
+Preserve markdown formatting.
 
 {article}
 <|im_end|>
