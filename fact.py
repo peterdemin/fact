@@ -1,7 +1,7 @@
 import json
 from llama_cpp import Llama
 
-MODEL_PATH = 'model.bin'
+MODEL_PATH = 'orca.gguf'
 TASKS_PATH = 'fact.json'
 
 PROMPT_TMPL = """\
