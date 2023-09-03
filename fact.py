@@ -44,7 +44,11 @@ def main():
         for swap in (False, True):
             prompt = format_prompt(task, swap)
             print(f'{i}. {prompt}')
-            output = llm.create_completion(prompt, max_tokens=2)
+            output = llm.create_completion(
+                prompt,
+                max_tokens=20,
+                temperature=1e-6,
+            )
             answer = output['choices'][0]['text'].strip().split()[0]
             print(answer)
             result = dict(task, answer=answer, swap=swap)
