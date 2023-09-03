@@ -1,57 +1,54 @@
+import sys
 from llama_cpp import Llama
 
-MODEL_PATH = 'model.bin'
-
-PROMPT_TMPL = """\
-Decide which of the following summary is more consistent with the article sentence.
-
-Note that consistency means all information in the summary is supported by the article.
-
-Article Sentence: {article}
-Summary A: {option_a}
-Summary B: {option_b}
-
-The more consistent is Summary"""
+# MODEL_PATH = 'oasst.gguf'
+MODEL_PATH = 'orca.gguf'
 
 
-SENT = {
-    "article": "and a prized silver dollar each could fetch $ 10 million or more.",
-    "correct": "a prized silver dollar each could fetch $ 10 million.",
-    "incorrect": "a prized silver dollar each could fetch $ 10 or more.",
-}
+ORCA_TMPL = """\
+You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
 
-prompt = PROMPT_TMPL.format(
-    article=SENT['article'],
-    option_a=SENT['correct'],
-    option_b=SENT['incorrect'],
-)
+If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
 
-n_ctx = 512
+Edit the following reading notes to ensure the structure reads well.
+I also need you to check for grammatical errors and spelling mistakes.
 
+{article}
+
+Answer:
+"""
+
+OASST_TMPL = """\
+<|im_start|>system
+You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
+
+If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
+<|im_end|>
+<|im_start|>user
+Edit the following reading notes to ensure the structure reads well.
+I also need you to check for grammatical errors and spelling mistakes.
+
+{article}
+<|im_end|>
+<|im_start|>assistant
+"""
+
+n_ctx = 1000
 llm = Llama(model_path=MODEL_PATH, n_gqa=8, verbose=False, n_ctx=n_ctx)
-
-print(prompt)
+prompt = ORCA_TMPL.format(article=sys.stdin.read())
+# print(prompt)
 n_tokens = len(llm.tokenize(prompt.encode('utf-8')))
-print(f'{n_tokens=}')
-
+# print(f'{n_tokens=}')
 if n_tokens >= n_ctx:
-    print("reloading model to fit context")
+    print("W: Reloading model to fit context: {n_tokens} tokens", file=sys.stderr)
     llm = Llama(model_path=MODEL_PATH, n_gqa=8, verbose=False, n_ctx=n_tokens + 20)
 
 output = llm.create_completion(
-    # "Q: Name the planets in the solar system? A: ",
-    # "Q: How many planets are in solar system? A: ",
     prompt,
-    max_tokens=4,
-    # stop=["Q:", "\n"],
-    stop=["\n"],
-    # echo=True,
-    # stream=True,
+    max_tokens=n_tokens * 1.5,
+    stop=['<|im_end|>'],
+    stream=True,
 )
-print(output)
-# for chunk in output:
-#     choice = chunk['choices'][0]
-#     print(choice['text'], end='')
-#     if choice['finish_reason']:
-#         print()
-#         print(f"finish_reason: {choice['finish_reason']}")
+for chunk in output:
+    choice = chunk['choices'][0]
+    print(choice['text'], end='')
