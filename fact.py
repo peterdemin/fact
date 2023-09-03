@@ -1,7 +1,7 @@
 import json
 from llama_cpp import Llama
 
-MODEL_PATH = 'orca.gguf'
+MODEL_PATH = 'oasst.gguf'
 TASKS_PATH = 'fact.json'
 
 PROMPT_TMPL = """\
@@ -15,13 +15,39 @@ Summary X: {option_b}
 Answer: The more consistent is Summary"""
 
 
+OASST_TMPL = """\
+<|im_start|>system
+You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
+
+If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
+<|im_end|>
+<|im_start|>user
+Decide which of the following Summary is more consistent with the Article Sentence.
+
+Note that consistency means all information in the Summary is supported by the Article Sentence.
+
+Article Sentence: {article}
+Summary Y: {option_a}
+Summary X: {option_b}
+<|im_end|>
+<|im_start|>assistant
+The more consistent is Summary
+"""
+OASST_STOP = '<|im_end|>'
+
+
 def iter_tasks(filename):
     with open(filename, 'rt', encoding='utf-8') as fobj:
         return json.load(fobj)
 
 
 def format_prompt(task, swap):
-    return PROMPT_TMPL.format(
+    template = (
+        OASST_TMPL
+        if 'oasst' in MODEL_PATH
+        else PROMPT_TMPL
+    )
+    return template.format(
         article=task['article_sent'],
         option_a=task['incorrect_sent'] if swap else task['correct_sent'],
         option_b=task['correct_sent'] if swap else task['incorrect_sent'],
@@ -63,6 +89,7 @@ def main():
                 top_k=10,
                 top_p=0.9,
                 temperature=1e-6,
+                stop=[OASST_STOP],
             )
             answer = output['choices'][0]['text'].strip().split()[0]
             print(answer)
