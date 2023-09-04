@@ -1,8 +1,8 @@
 import sys
 from llama_cpp import Llama
 
-# MODEL_PATH = 'oasst.gguf'
-MODEL_PATH = 'orca.gguf'
+MODEL_PATH = 'oasst.gguf'
+# MODEL_PATH = 'orca.gguf'
 
 
 ORCA_TMPL = """\
@@ -10,7 +10,7 @@ You are a helpful, respectful and honest assistant. Always answer as helpfully a
 
 If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
 
-Edit the following reading notes to ensure the structure reads well.
+Edit the following essay to ensure the structure reads well.
 Check for grammatical errors and spelling mistakes.
 Preserve markdown formatting.
 
@@ -26,7 +26,7 @@ You are a helpful, respectful and honest assistant. Always answer as helpfully a
 If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
 <|im_end|>
 <|im_start|>user
-Edit the following reading notes to ensure the structure reads well.
+Edit the following essay to ensure the structure reads well.
 Check for grammatical errors and spelling mistakes.
 Preserve markdown formatting.
 
