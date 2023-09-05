@@ -3,6 +3,7 @@ from llama_cpp import Llama
 
 MODEL_PATH = 'oasst.gguf'
 TASKS_PATH = 'fact.json'
+SKIP_TO = 75
 
 PROMPT_TMPL = """\
 Decide which of the following Summary is more consistent with the Article Sentence.
@@ -80,6 +81,8 @@ def main():
     llm = Llama(model_path=MODEL_PATH, n_gqa=8, verbose=False) # , n_ctx=n_ctx)
     check_ctx_len(llm)
     for i, task in enumerate(iter_tasks(TASKS_PATH)):
+        if i < SKIP_TO:
+            continue
         for swap in (False, True):
             prompt = format_prompt(task, swap)
             print(f'{i}. {prompt}')
