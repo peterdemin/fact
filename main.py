@@ -19,26 +19,38 @@ Preserve markdown formatting.
 Answer:
 """
 
-OASST_TMPL = """\
+OASST_BASE_TMPL = """\
 <|im_start|>system
 You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
 
 If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
 <|im_end|>
 <|im_start|>user
+{task}
+<|im_end|>
+<|im_start|>assistant
+"""
+
+OASST_PROOFREAD_TMPL = OASST_BASE_TMPL.format(
+    task="""\
 Edit the following essay to ensure the structure reads well.
 Check for grammatical errors and spelling mistakes.
 Preserve markdown formatting.
 
 {article}
-<|im_end|>
-<|im_start|>assistant
 """
+)
+
+
+OASST_TRANSLATE_TMPL = OASST_BASE_TMPL.format(
+    task="Translate into {lang}: {text}"
+)
 
 n_ctx = 1000
 llm = Llama(model_path=MODEL_PATH, n_gqa=8, verbose=False, n_ctx=n_ctx)
-prompt = ORCA_TMPL.format(article=sys.stdin.read())
-# print(prompt)
+# prompt = ORCA_TMPL.format(article=sys.stdin.read())
+prompt = OASST_TRANSLATE_TMPL.format(lang="Chinese", text=sys.stdin.read().strip())
+print(prompt)
 n_tokens = len(llm.tokenize(prompt.encode('utf-8')))
 # print(f'{n_tokens=}')
 if n_tokens >= n_ctx:
