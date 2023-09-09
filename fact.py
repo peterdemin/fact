@@ -3,7 +3,7 @@ from llama_cpp import Llama
 
 MODEL_PATH = 'oasst.gguf'
 TASKS_PATH = 'fact.json'
-SKIP_TO = 76
+SKIP_TO = 0
 
 PROMPT_TMPL = """\
 Decide which of the following Summary is more consistent with the Article Sentence.
